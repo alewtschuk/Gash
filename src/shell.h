@@ -61,13 +61,6 @@ extern "C"
   char **cmd_parse(char const *line);
 
   /**
-   * @brief Free the line that was constructed with parse_cmd
-   *
-   * @param line the line to free
-   */
-  void cmd_free(char ** line);
-
-  /**
    * @brief Trim the whitespace from the start and end of a string.
    * For example "   ls -a   " becomes "ls -a". This function modifies
    * the argument line so that all printable chars are moved to the
@@ -103,14 +96,6 @@ extern "C"
    * @param sh
    */
   void sh_init(struct shell *sh);
-
-  /**
-   * @brief Destroy shell. Free any allocated memory and resources and exit
-   * normally.
-   *
-   * @param sh
-   */
-  void sh_destroy(struct shell *sh);
 
   /**
    * @brief Parse command line args from the user when the shell was launched

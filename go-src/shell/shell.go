@@ -72,12 +72,6 @@ func ChangeDir(dir string) (int, error) {
 // uses os.StartProcess(). The number of args will
 // be limited to the number of max arguments loaded
 // from sysconf.
-// func CmdParse(line string) string {
-// 	var maxArgs int = int(C.getArgMax())
-// 	var funcMap map[string]func() = make(map[string]func())
-
-// 	return fmt.Sprintln(maxArgs)
-// }
 
 func ParseArgs(argCount int, args map[string]any) {
 	// Switch on argCount to handle parsing for arguments
