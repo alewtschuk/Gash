@@ -26,3 +26,10 @@ func ExtractPathExecutatbles() []string {
 	commandList = dsutils.EnsureUnique(commandList)
 	return commandList
 }
+
+// Parses the command into a slice of strings to be returned
+func ParseCommand(line string) []string {
+	// Split line into slice of strings at whitespace
+	line = strings.Trim(line, " ") // TODO: Check for all invisible unicode characters as future edge case
+	return strings.Split(line, " ")
+}

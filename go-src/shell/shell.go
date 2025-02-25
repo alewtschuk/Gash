@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"gash/go-src/shell/parser"
 	"log"
 
 	"golang.org/x/sys/unix"
@@ -34,6 +35,8 @@ func Run() {
 	for {
 		line := readLine()
 		log.Print(line) // Uses log to avoid buffering issues
+		var parsedCmd []string = parser.ParseCommand(line)
+		log.Println(parsedCmd)
 	}
 }
 

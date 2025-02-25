@@ -2,12 +2,13 @@ package shell
 
 import "os"
 
+// Define builtin commands
 var builtins []string = []string{"cd", "exit", "history"}
 
 // Changes the current working directory of the shell.
 // Uses the *nix system call chdir. With no arguments the users home
 // directory is used as the defaut.
-func ChangeDir(dir string) (int, error) {
+func changeDir(dir string) (int, error) {
 	//Get the user's home directory
 	var homeDir, error = os.UserHomeDir()
 	if error != nil {
@@ -26,3 +27,10 @@ func ChangeDir(dir string) (int, error) {
 func getBuiltins() []string {
 	return builtins
 }
+
+// func handleBuiltins(cmd string) {
+// 	switch cmd {
+// 	case "cd":
+// 		changeDir()
+// 	}
+// }
