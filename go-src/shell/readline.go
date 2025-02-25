@@ -1,7 +1,6 @@
 package shell
 
 import (
-	"fmt"
 	"gash/go-src/shell/parser"
 	"io"
 	"log"
@@ -13,8 +12,15 @@ import (
 // Declare reader instance, initalized once
 var reader *readline.Instance
 
+// Initalizes the reader
 func initReader() {
 	var err error
+
+	//Log settings
+	// Ensures logs print immediately
+	log.SetOutput(os.Stderr)
+	// Removes timestamp
+	log.SetFlags(0)
 
 	reader, err = readline.NewEx(&readline.Config{
 		Prompt:          GetPrompt("gash >"),
@@ -22,9 +28,8 @@ func initReader() {
 		AutoComplete:    setCompleter(),
 		InterruptPrompt: "^C",
 	})
-
 	if err != nil {
-		log.Fatal("DEBUG: Failed to initialize reader:", err) // ✅ Step 7 Debug
+		log.Fatal("Failed to initialize reader")
 	}
 }
 
@@ -70,14 +75,16 @@ func setCompleter() *readline.PrefixCompleter {
 func readLine() string {
 
 	line, err := reader.Readline()
+	// Handles gracefull reader exit
+	reader.CaptureExitSignal()
 	if err == readline.ErrInterrupt {
-		fmt.Println("Received interrupt, exiting...")
+		log.Println("Received interrupt, exiting...")
 		os.Exit(0)
 	} else if err == io.EOF {
-		fmt.Println("Received EOF, exiting...")
+		log.Println("Received EOF, exiting...")
 		os.Exit(1)
 	} else if err != nil {
-		fmt.Println("Readline error:", err) // ✅ Step 2 Debug
+		log.Println("Readline error:", err)
 		return ""
 	}
 

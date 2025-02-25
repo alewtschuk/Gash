@@ -1,7 +1,7 @@
 package shell
 
 import (
-	"fmt"
+	"log"
 
 	"golang.org/x/sys/unix"
 )
@@ -31,10 +31,9 @@ type shell struct {
 
 func Run() {
 	initReader()
-
 	for {
 		line := readLine()
-		fmt.Println("DEBUG: readLine() returned ->" + line) // ✅ Step 5 Debug
+		log.Print(line) // Uses log to avoid buffering issues
 	}
 }
 
