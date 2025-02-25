@@ -36,7 +36,7 @@ func Run() {
 		log.Print(line) // Uses log to avoid buffering issues
 		var isBuiltin bool = getCommandType(line)
 		if !isBuiltin {
-
+			//execute()
 		} else {
 			handleBuiltins(line)
 		}
@@ -55,10 +55,10 @@ func getCommandType(line []string) bool {
 	// For every builtin command check if the first arg of line matches
 	for _, builtin := range builtins {
 		if line[0] == builtin {
-			log.Println("Command is built-in")
+			log.Println("DEBUG: Command is built-in ✅\n")
 			return true
 		}
 	}
-	log.Println("Command is not built-in")
+	log.Println("DEBUG: Command is not built-in ❌\n")
 	return false
 }

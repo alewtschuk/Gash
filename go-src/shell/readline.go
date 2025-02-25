@@ -78,13 +78,13 @@ func readLine() []string {
 	// Handles gracefull reader exit
 	reader.CaptureExitSignal()
 	if err == readline.ErrInterrupt {
-		log.Println("Received interrupt, exiting...")
+		log.Println("DEBUG: Received interrupt, exiting...")
 		os.Exit(0)
 	} else if err == io.EOF {
-		log.Println("Received EOF, exiting...")
+		log.Println("DEBUG: Received EOF, exiting...")
 		os.Exit(1)
 	} else if err != nil {
-		log.Println("Readline error:", err)
+		log.Println("DEBUG: Readline error:", err)
 		return nil
 	}
 
