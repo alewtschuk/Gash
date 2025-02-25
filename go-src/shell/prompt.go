@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"strings"
 )
 
 // Sets the shell prompt. This will attempt to load the prompt
@@ -29,4 +30,16 @@ func GetPrompt(envVar string) string {
 		return fmt.Sprintf("%v@%v gash > ", user.Username, hostname)
 	}
 	return prompt
+}
+
+func updatePrompt(updateStr string) {
+	var currentPrompt string = GetPrompt("") // TODO: Adjust for envVar
+	//var hostname, _ = os.Hostname()
+	//var user, _ = user.Current()
+	//var username string = user.Username
+
+	before, after, _ := strings.Cut(currentPrompt, " ")
+	log.Println("Before: " + before)
+	log.Println("After: " + after)
+	log.Println(os.Getwd())
 }

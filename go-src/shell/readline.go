@@ -72,7 +72,7 @@ func setCompleter() *readline.PrefixCompleter {
 }
 
 // Sets up reader and returns the line read and error if present
-func readLine() string {
+func readLine() []string {
 
 	line, err := reader.Readline()
 	// Handles gracefull reader exit
@@ -85,8 +85,9 @@ func readLine() string {
 		os.Exit(1)
 	} else if err != nil {
 		log.Println("Readline error:", err)
-		return ""
+		return nil
 	}
 
-	return line
+	// Returns the parsed command slice from the parser
+	return parser.ParseCommand(line)
 }
