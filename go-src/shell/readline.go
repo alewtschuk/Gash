@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"slices"
 
 	"github.com/chzyer/readline"
 )
@@ -62,6 +63,7 @@ func filterInput(r rune) (rune, bool) {
 func setCompleter() *readline.PrefixCompleter {
 	// Fetch external commands dynamically
 	var externalCmds []string = parser.ExtractPathExecutatbles()
+	slices.Sort(externalCmds)
 
 	// Fetch internal commands
 	var internalCmds []string = getBuiltins()

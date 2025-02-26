@@ -75,7 +75,6 @@ func changeDir(dir string) (int, error) {
 		updateDirEnvars(nwd, pwd)
 		if err != nil {
 			log.Print("Error changing directory ")
-			log.Println(err)
 			return -1, err
 		}
 	}
