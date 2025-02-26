@@ -2,6 +2,7 @@ package shell
 
 import (
 	"gash/go-src/shell/parser"
+	"io"
 	"log"
 	"os"
 
@@ -26,6 +27,9 @@ func initReader() {
 		HistoryFile:     "/tmp/gashcmds.tmp",
 		AutoComplete:    setCompleter(),
 		InterruptPrompt: "^C",
+
+		HistorySearchFold:   true,
+		FuncFilterInputRune: filterInput,
 	})
 	if err != nil {
 		log.Fatal("Failed to initialize reader")
@@ -42,6 +46,16 @@ func listFiles(path string) func(string) []string {
 		}
 		return names
 	}
+}
+
+// Function to filter input to avoid some issues handling signals
+func filterInput(r rune) (rune, bool) {
+	switch r {
+	// Block CtrlZ feature
+	case readline.CharCtrlZ:
+		return r, false
+	}
+	return r, true
 }
 
 // Sets the completer to contain all internal and external commands
@@ -73,7 +87,17 @@ func setCompleter() *readline.PrefixCompleter {
 // Sets up reader and returns the line read and error if present
 func readLine() []string {
 
-	line, _ := reader.Readline()
+	line, err := reader.Readline()
+
+	// Capture and ignore exit signals
+	reader.CaptureExitSignal()
+	if err == readline.ErrInterrupt {
+		return nil
+	} else if err == io.EOF {
+		return nil
+	} else if err != nil {
+		return nil
+	}
 
 	// Get the parsed command slice from the parser
 	var parsedline []string = parser.ParseCommand(line)

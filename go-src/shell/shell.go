@@ -1,10 +1,18 @@
 package shell
 
+// Runs the shell
 func Run() {
+	// Initalize reader
 	initReader()
 	for {
 		line := readLine()
 		//log.Print(line) // Uses log to avoid buffering issues
+
+		// Skip processing line if empty
+		if len(line) == 0 {
+			continue
+		}
+
 		var isBuiltin bool = getCommandType(line)
 		if !isBuiltin {
 			execute(line)
@@ -15,11 +23,15 @@ func Run() {
 	}
 }
 
-// Converts line read from the user into a format
-// uses os.StartProcess(). The number of args will
-// be limited to the number of max arguments loaded
-// from sysconf.
+// Checks if the command is an internal or
+// external command.
 func getCommandType(line []string) bool {
+
+	// Skip processing line if empty
+	if len(line) == 0 {
+		return false
+	}
+
 	// Get the list of built-in commands
 	var builtins []string = getBuiltins()
 	// For every builtin command check if the first arg of line matches

@@ -26,6 +26,7 @@ func getDirEnvars() (string, string) {
 	return pwd, home
 }
 
+// Updates the directory environment variables
 func updateDirEnvars(nwd string, owd string) {
 	var err error = os.Setenv("OLDPWD", owd)
 	err = os.Setenv("PWD", nwd)
@@ -53,7 +54,6 @@ func changeDir(dir string) (int, error) {
 		updateDirEnvars(home, pwd)
 		if err != nil {
 			log.Print("Error changing directory")
-			log.Println(err)
 			return -1, err
 		}
 	} else {
@@ -90,6 +90,7 @@ func getBuiltins() []string {
 	return builtins
 }
 
+// Handles built in functions
 func handleBuiltins(cmd []string) {
 	if len(cmd) > 1 && cmd[0] != "cd" {
 		log.Println("To many arguments passed. Command not recognized")

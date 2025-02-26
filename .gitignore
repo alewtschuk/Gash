@@ -61,3 +61,6 @@ dkms.conf
 # Project files
 launch.json
 gash
+.gitignore
+/.vscode
+/.github
