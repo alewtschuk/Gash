@@ -13,7 +13,7 @@ build:
 ## Run tests
 check:
 	@echo "Running tests..."
-	$(GO) test ./... -v
+	cd go-src/shell/ && $(GO) test -v ./
 
 ## Clean the project
 clean:
