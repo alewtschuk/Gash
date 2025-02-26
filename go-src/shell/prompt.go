@@ -12,8 +12,7 @@ import (
 // from the requested environment variable. If the
 // variable is not set a default prompt of "gash>" is returned.
 func GetPrompt(envVar string) string {
-	//Check if the prompt for the envVar key exists
-	prompt, exists := os.LookupEnv(envVar)
+	// Get User
 	user, err := user.Current()
 	if err != nil {
 		log.Fatal("Error fetching user value. Exiting...")
@@ -25,21 +24,50 @@ func GetPrompt(envVar string) string {
 		log.Fatal("Error fetching domain. Exiting...")
 	}
 
-	//Return default value if there is no prompt
+	fpwd := getFormatedPwd()
+
+	//Check if the prompt for the envVar key exists
+	prompt, exists := os.LookupEnv("PROMPT")
 	if !exists {
-		return fmt.Sprintf("%v@%v gash > ", user.Username, hostname)
+		//Set default value if there is no prompt
+		prompt = fmt.Sprintf("%v@%v%s gash > ", user.Username, hostname, fpwd)
+		// Set prompt environment variable
+		os.Setenv("PROMPT", prompt)
 	}
+
+	os.Setenv("PROMPT", prompt)
 	return prompt
 }
 
-func updatePrompt(updateStr string) {
-	var currentPrompt string = GetPrompt("") // TODO: Adjust for envVar
-	//var hostname, _ = os.Hostname()
-	//var user, _ = user.Current()
-	//var username string = user.Username
+func updatePrompt() {
+	// Get formatted working directory
+	fpwd := getFormatedPwd()
+	//log.Println("FPWD is: " + fpwd)
+	// Get PROMPT environment variable
+	prompt := os.Getenv("PROMPT")
+	//log.Println("PROMPT is: " + prompt)
 
-	before, after, _ := strings.Cut(currentPrompt, " ")
-	log.Println("Before: " + before)
-	log.Println("After: " + after)
-	log.Println(os.Getwd())
+	// Cut working directory at the "~" to substring after"
+	splitPrompt := strings.Split(prompt, "~")
+
+	// Set PROMPT environment variable to
+	os.Setenv("PROMPT", fmt.Sprintf("%s%s gash > ", splitPrompt[0], fpwd))
+
+	// Dynamically refresh the reader prompt
+	if reader != nil {
+		reader.SetPrompt(os.Getenv("PROMPT"))
+		reader.Refresh()
+	}
+}
+
+// Returns the formatted working directory.
+// Replaces $HOME with a ~
+func getFormatedPwd() string {
+	// Get the current working directory
+	pwd := os.Getenv("PWD")
+	//log.Println("DEBUG: PWD in GetPrompt is: " + pwd)
+	// Get the user home directory
+	home := os.Getenv("HOME")
+
+	return strings.Replace(pwd, home, "~", 1)
 }

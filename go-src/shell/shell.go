@@ -1,41 +1,13 @@
 package shell
 
-import (
-	"log"
-)
-
-// /*
-// #include <unistd.h>
-// long getArgMax() {
-// 	return sysconf(_SC_ARG_MAX);
-// }
-// */
-// import "C"
-
-// Define the struct for the shell
-type shell struct {
-	// shell_is_interactive int
-	// shell_pgid           int
-	// shell_tmodes         unix.Termios
-	// shell_terminal       int
-	// prompt               string
-	dir string
-}
-
-// func InitShell() shell{
-// 	return &shell{
-
-// 	}
-// }
-
 func Run() {
 	initReader()
 	for {
 		line := readLine()
-		log.Print(line) // Uses log to avoid buffering issues
+		//log.Print(line) // Uses log to avoid buffering issues
 		var isBuiltin bool = getCommandType(line)
 		if !isBuiltin {
-			//execute()
+			execute(line)
 		} else {
 			handleBuiltins(line)
 		}
@@ -47,17 +19,16 @@ func Run() {
 // uses os.StartProcess(). The number of args will
 // be limited to the number of max arguments loaded
 // from sysconf.
-
 func getCommandType(line []string) bool {
 	// Get the list of built-in commands
 	var builtins []string = getBuiltins()
 	// For every builtin command check if the first arg of line matches
 	for _, builtin := range builtins {
 		if line[0] == builtin {
-			log.Println("DEBUG: Command is built-in ✅\n")
+			//log.Println("DEBUG: Command is built-in ✅\n")
 			return true
 		}
 	}
-	log.Println("DEBUG: Command is not built-in ❌\n")
+	//log.Println("DEBUG: Command is not built-in ❌\n")
 	return false
 }

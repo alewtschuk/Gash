@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // Define builtin commands
@@ -19,8 +20,8 @@ func getDirEnvars() (string, string) {
 	// Get the user's home directory environment variable
 	var home = os.Getenv("HOME")
 
-	log.Println("DEBUG: Current working directory: " + pwd)
-	log.Println("DEBUG: User home directory: " + home + "\n")
+	//log.Println("DEBUG: Current working directory: " + pwd)
+	//log.Println("DEBUG: User home directory: " + home + "\n")
 
 	return pwd, home
 }
@@ -29,10 +30,10 @@ func updateDirEnvars(nwd string, owd string) {
 	var err error = os.Setenv("OLDPWD", owd)
 	err = os.Setenv("PWD", nwd)
 	if err != nil {
-		log.Fatal("DEBUG: Error updating environment variables")
+		log.Fatal("Error updating environment variables. Exiting...")
 	}
-	log.Println("DEBUG: OLDPWD is now: " + owd)
-	log.Println("DEBUG: PWD is now: " + nwd + "\n")
+	//log.Println("DEBUG: OLDPWD is now: " + owd)
+	//log.Println("DEBUG: PWD is now: " + nwd + "\n")
 
 }
 
@@ -46,30 +47,41 @@ func changeDir(dir string) (int, error) {
 
 	// If cd recieved with no path specified change dir to home
 	if dir == "cd" {
-		log.Println("DEBUG: Cd passed with no args changing directory to home")
+		//log.Println("DEBUG: Cd passed with no args changing directory to home")
 		// Change dir to home and update env
 		err = os.Chdir(home)
 		updateDirEnvars(home, pwd)
 		if err != nil {
-			log.Print("DEBUG: Error changing directory ")
+			log.Print("Error changing directory")
 			log.Println(err)
 			return -1, err
 		}
 	} else {
-		log.Println("DEBUG: Changing directory to: " + dir)
+		//log.Println("DEBUG: Changing directory to: " + dir + "\n")
 		// Create nwd to be current working directory/requested directory
 		var nwd string = path.Clean(filepath.Join(pwd, dir))
+		//log.Println("DEBUG: requested directory is: " + dir)
+		//log.Println("DEBUG: working directory is: " + pwd)
+		//log.Println("DEBUG: nwd will be: " + pwd + " plus " + dir)
+		//log.Println("DEBUG: nwd is: " + nwd)
+
+		// If the requested directory contains the current working directory
+		if strings.Contains(dir, pwd) {
+			// Remove the overlap by replacing the working directory in the requested directory with itself to avoid duplication
+			nwd = strings.Replace(dir, pwd, pwd, 1)
+			//log.Println("DEBUG: nwd is now: " + nwd)
+		}
 		err = os.Chdir(dir)
 		updateDirEnvars(nwd, pwd)
 		if err != nil {
-			log.Print("DEBUG: Error changing directory ")
+			log.Print("Error changing directory ")
 			log.Println(err)
 			return -1, err
 		}
 	}
 
-	pwd, _ = getDirEnvars()
-	log.Println("DEBUG: Current working directory after default: " + pwd + "\n")
+	//pwd, _ = getDirEnvars()
+	//log.Println("DEBUG: Current working directory after default: " + pwd + "\n")
 	return 0, err
 }
 
@@ -94,7 +106,7 @@ func handleBuiltins(cmd []string) {
 
 			// If cd called with arg pass the file path cmd[1] to changeDir and eval accordingly
 			if len(cmd) > 1 {
-				log.Println("DEBUG: cd called with argument " + cmd[1])
+				//log.Println("DEBUG: cd called with argument " + cmd[1])
 				dirReturn, err = changeDir(cmd[1])
 				//updatePrompt(cmd[1])
 			}
@@ -103,9 +115,13 @@ func handleBuiltins(cmd []string) {
 			if err != nil || dirReturn == -1 {
 				log.Println(cmd[0] + " no such file or directory: " + cmd[1])
 			}
+			// Set updated prompt
+			updatePrompt()
+			GetPrompt("PROMPT")
 
 		case "exit":
 			os.Exit(0)
+
 		case "history":
 			var file, err = os.ReadFile("/tmp/gashcmds.tmp")
 			errcheck(err)

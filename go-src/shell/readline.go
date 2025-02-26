@@ -2,7 +2,6 @@ package shell
 
 import (
 	"gash/go-src/shell/parser"
-	"io"
 	"log"
 	"os"
 
@@ -23,7 +22,7 @@ func initReader() {
 	log.SetFlags(0)
 
 	reader, err = readline.NewEx(&readline.Config{
-		Prompt:          GetPrompt("gash >"),
+		Prompt:          GetPrompt("PROMPT"),
 		HistoryFile:     "/tmp/gashcmds.tmp",
 		AutoComplete:    setCompleter(),
 		InterruptPrompt: "^C",
@@ -74,20 +73,13 @@ func setCompleter() *readline.PrefixCompleter {
 // Sets up reader and returns the line read and error if present
 func readLine() []string {
 
-	line, err := reader.Readline()
-	// Handles gracefull reader exit
-	reader.CaptureExitSignal()
-	if err == readline.ErrInterrupt {
-		log.Println("DEBUG: Received interrupt, exiting...")
-		os.Exit(0)
-	} else if err == io.EOF {
-		log.Println("DEBUG: Received EOF, exiting...")
-		os.Exit(1)
-	} else if err != nil {
-		log.Println("DEBUG: Readline error:", err)
-		return nil
+	line, _ := reader.Readline()
+
+	// Get the parsed command slice from the parser
+	var parsedline []string = parser.ParseCommand(line)
+	if parsedline == nil {
+		log.Println("Unable to parse line")
 	}
 
-	// Returns the parsed command slice from the parser
-	return parser.ParseCommand(line)
+	return parsedline
 }
