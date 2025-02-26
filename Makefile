@@ -7,6 +7,7 @@ GO := go
 all: check
 
 build:
+	@echo "Building and running project..."
 	$(GO) build -o gash go-src/gash.go && ./gash
 
 ## Run tests
