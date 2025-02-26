@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -10,36 +11,56 @@ var builtins []string = []string{"cd", "exit", "history"}
 
 // Retrieves the needed environment variables from the OS
 // for handling directories
-func getDirEnvars() (string, string, string) {
+func getDirEnvars() (string, string) {
 	// Declare all needed vars
 	// Get working directory environment variable
 	var pwd string = os.Getenv("PWD")
-	// Get the old working directory environment variable
-	var oldpwd string = os.Getenv("OLDPWD")
 	// Get the user's home directory environment variable
 	var home = os.Getenv("HOME")
 
 	log.Println("DEBUG: Current working directory: " + pwd)
-	log.Println("DEBUG: Old working directory: " + oldpwd)
 	log.Println("DEBUG: User home directory: " + home)
 
-	return pwd, oldpwd, home
+	return pwd, home
+}
+
+func updateDirEnvars(nwd string, owd string) {
+	var err error = os.Setenv("OLDPWD", owd)
+	err = os.Setenv("PWD", nwd)
+	if err != nil {
+		log.Fatal("DEBUG: Error updating environment variables")
+	}
+	log.Println("DEBUG: OLDPWD is now: " + owd)
+	log.Println("DEBUG: PWD is now: " + nwd)
+
 }
 
 // Changes the current working directory of the shell.
 // Uses the *nix system call chdir. With no arguments the users home
 // directory is used as the defaut.
 func changeDir(dir string) (int, error) {
-	// BUG: First run does not change directory if subdir is present, second run does
 	// TODO: Check if the dir passed is a subdir  of the current and handle accordingly
 
 	var err error
-	var pwd, _, home = getDirEnvars()
+	var pwd, home = getDirEnvars()
 
 	// If cd recieved with no path specified change dir to home
 	if dir == "cd" {
 		log.Println("DEBUG: Cd passed with no args changing directory to home")
+		// Change dir to home and update env
 		err = os.Chdir(home)
+		updateDirEnvars(home, pwd)
+		if err != nil {
+			log.Print("DEBUG: Error changing directory ")
+			log.Println(err)
+			return -1, err
+		}
+	} else {
+		log.Println("DEBUG: Changing directory to: " + dir)
+		// Create nwd to be current working directory/requested directory
+		var nwd string = fmt.Sprintf("%s/%s", pwd, dir)
+		err = os.Chdir(nwd)
+		updateDirEnvars(nwd, pwd)
 		if err != nil {
 			log.Print("DEBUG: Error changing directory ")
 			log.Println(err)
@@ -47,24 +68,8 @@ func changeDir(dir string) (int, error) {
 		}
 	}
 
-	// Attempt directory change to target dir input
-	// err = os.Chdir(dir)
-	// log.Println("DEBUG: Current working directory post change attempt: " + pwd)
-	// // If there is an error changing the dir return error values
-	// if err != nil {
-	// 	log.Print("DEBUG: Error changing directory ")
-	// 	log.Println(err)
-	// 	return -1, err
-	// }
-
-	// Attempt directory change with user specified dir
-	// if error returns use users home directory as value
-	// var error = os.Chdir(dir)
-
-	// if error != nil {
-	// 	error = os.Chdir(home)
-	// }
-	log.Println("DEBUG: Current wokring directory after default: " + pwd + "\n")
+	pwd, _ = getDirEnvars()
+	log.Println("DEBUG: Current working directory after default: " + pwd + "\n")
 	return 0, err
 }
 
@@ -89,6 +94,7 @@ func handleBuiltins(cmd []string) {
 
 			// If cd called with arg pass the file path cmd[1] to changeDir and eval accordingly
 			if len(cmd) > 1 {
+				log.Println("DEBUG: cd called with argument " + cmd[1])
 				dirReturn, err = changeDir(cmd[1])
 				//updatePrompt(cmd[1])
 			}

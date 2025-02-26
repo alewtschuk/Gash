@@ -2,8 +2,6 @@ package shell
 
 import (
 	"log"
-
-	"golang.org/x/sys/unix"
 )
 
 // /*
@@ -16,11 +14,12 @@ import (
 
 // Define the struct for the shell
 type shell struct {
-	shell_is_interactive int
-	shell_pgid           int
-	shell_tmodes         unix.Termios
-	shell_terminal       int
-	prompt               string
+	// shell_is_interactive int
+	// shell_pgid           int
+	// shell_tmodes         unix.Termios
+	// shell_terminal       int
+	// prompt               string
+	dir string
 }
 
 // func InitShell() shell{
