@@ -49,6 +49,7 @@ func updatePrompt() {
 
 	// Cut working directory at the "~" to substring after"
 	splitPrompt := strings.Split(prompt, "~")
+	//log.Printf("Strings split at ~\nBefore is: %s\nAfter is: %s", splitPrompt[0], splitPrompt[1])
 
 	// Set PROMPT environment variable to
 	os.Setenv("PROMPT", fmt.Sprintf("%s%s gash > ", splitPrompt[0], fpwd))

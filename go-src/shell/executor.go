@@ -15,6 +15,7 @@ func execute(args []string) {
 	err := cmd.Run()
 	if err != nil {
 		log.Printf("Command %s unable to be ran...\n", args[0])
+		//log.Printf("Error is: %v\n", err)
 	}
 }
 

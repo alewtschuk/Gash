@@ -3,6 +3,7 @@ package parser
 import (
 	"log"
 	"os"
+	"path"
 	"runtime"
 	"strings"
 
@@ -52,6 +53,12 @@ func ParseCommand(line string) []string {
 	// Declare max arguments byte length, pulls from sysconf using CGo
 	var argMax int = getArgMax()
 	var argLen int
+
+	// Check for reference of home dir using "~" or "~/"
+	if len(args) > 1 {
+		args = checkHomeRef(args)
+	}
+
 	// For each argument get the length of the bytes of the argument and the total byte length of all args
 	for _, arg := range args {
 		argLen += len(arg) + 1
@@ -61,5 +68,34 @@ func ParseCommand(line string) []string {
 		log.Println("Arguments passed to " + args[0] + " exceed max arguments allowed by " + runtime.GOOS)
 		return nil
 	}
+	return args
+}
+
+// Checks if there is a home directory reference using "~"" or "~/"
+// and replaces it with the path of the home directory
+func checkHomeRef(args []string) []string {
+	var tilde, tslash = "~", "~/"
+	var homeDir, err = os.UserHomeDir()
+	if err != nil {
+		log.Println("Error getting home directory")
+	}
+
+	// For each argument in args at index i
+	for i, arg := range args {
+		//log.Println("Arg is " + arg)
+		// If arg at i contains "~"" or "~/" replace refernce with home directory
+		switch {
+		case strings.Contains(arg, tilde):
+			args[i] = path.Clean(strings.Replace(arg, tilde, homeDir, 1))
+		case strings.Contains(arg, tslash):
+			args[i] = path.Clean(strings.Replace(arg, tslash, homeDir, 1))
+		default:
+			// If not present do nothing
+			continue
+		}
+		///log.Println("Arg is now " + arg)
+	}
+	//log.Println(args)
+
 	return args
 }

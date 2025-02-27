@@ -57,13 +57,24 @@ func changeDir(dir string) (int, error) {
 			return -1, err
 		}
 	} else {
-		//log.Println("DEBUG: Changing directory to: " + dir + "\n")
-		// Create nwd to be current working directory/requested directory
-		var nwd string = path.Clean(filepath.Join(pwd, dir))
-		//log.Println("DEBUG: requested directory is: " + dir)
+		log.Println("DEBUG: Changing directory to: " + dir + "\n")
+		// Create nwd to be the directory we wish to change to
+		var nwd string
+
+		// Check if the path of the requested directory is an absolute path
+		if filepath.IsAbs(dir) {
+			//log.Println("DEBUG: requested directory is absolute: " + dir)
+			// Set nwd to the shortest path equivalent to the requested directory
+			nwd = path.Clean(dir)
+		} else {
+			//log.Println("DEBUG: requested directory is relative: " + dir)
+			//log.Println("DEBUG: nwd will be: " + pwd + " plus " + dir)
+			// If the path is not absolute treat it as a relative path by joining current working directory/requested directory
+			nwd = path.Clean(filepath.Join(pwd, dir))
+			//log.Println("DEBUG: nwd is: " + nwd + "\n")
+		}
+
 		//log.Println("DEBUG: working directory is: " + pwd)
-		//log.Println("DEBUG: nwd will be: " + pwd + " plus " + dir)
-		//log.Println("DEBUG: nwd is: " + nwd)
 
 		// If the requested directory contains the current working directory
 		if strings.Contains(dir, pwd) {
