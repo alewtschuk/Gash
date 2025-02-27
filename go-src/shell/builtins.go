@@ -57,7 +57,7 @@ func changeDir(dir string) (int, error) {
 			return -1, err
 		}
 	} else {
-		log.Println("DEBUG: Changing directory to: " + dir + "\n")
+		//log.Println("DEBUG: Changing directory to: " + dir + "\n")
 		// Create nwd to be the directory we wish to change to
 		var nwd string
 
