@@ -1,3 +1,6 @@
+// BUG: Issue with handeling child process interupt signals. For example using sleep 4 and pressing CTRL-C ends sleep as it should
+// returns an error that sleep was unable to be ran, and gash resumes BUT, gash no longer takes input from stdin after child process
+// is killed and prompt returns for next input
 package shell
 
 import (

@@ -1,3 +1,5 @@
+// BUG: when the cd is accidentally attempted a change to file rather than directory, prompt updates PWD as file path even when cd cannot change to file
+// BUG: Above expanded, prompt updates when cd command fails and reflects failed path when it should not
 package shell
 
 import (
