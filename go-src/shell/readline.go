@@ -66,7 +66,7 @@ func setCompleter() *readline.PrefixCompleter {
 	slices.Sort(externalCmds)
 
 	// Fetch internal commands
-	var internalCmds []string = getBuiltins()
+	var internalCmds []string = GetBuiltins()
 
 	var rootItems []readline.PrefixCompleterInterface
 

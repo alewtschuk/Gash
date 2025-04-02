@@ -18,6 +18,10 @@ long getArgMax() {
 */
 import "C"
 
+// TEMP: This is done to avoid cyclic import in the shell package
+// TODO: Adjust and remove later durring refactor
+var tempbuiltins []string = []string{"cd", "exit", "history"}
+
 // CGo wrapper function to get ARG_MAX from sysconf()
 func getArgMax() int {
 	return int(C.getArgMax())
@@ -98,4 +102,24 @@ func checkHomeRef(args []string) []string {
 	//log.Println(args)
 
 	return args
+}
+
+// Checks if the command is an internal or
+// external command.
+func GetCommandType(line []string) bool {
+
+	// Skip processing line if empty
+	if len(line) == 0 {
+		return false
+	}
+
+	// For every builtin command check if the first arg of line matches
+	for _, builtin := range tempbuiltins {
+		if line[0] == builtin {
+			//log.Println("DEBUG: Command is built-in ✅\n")
+			return true
+		}
+	}
+	//log.Println("DEBUG: Command is not built-in ❌\n")
+	return false
 }

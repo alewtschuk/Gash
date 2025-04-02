@@ -1,11 +1,24 @@
 package shell
 
-// Runs the shell
-func Run() {
+// Declare shell struct
+// Holds the InputReader wrapper for the reader,
+// Executor and BuiltinsHandler.
+//
+// Also possibly holds the config
+type Shell struct {
+	Reader   InputReader
+	Parser   Parser
+	Executor Executor
+	Builtins BuiltinHandler
+	Config   *ShellConfig // Will not be a pointer (probably)
+}
+
+// Runs the shell. Method on shell struct
+func (sh *Shell) Run() {
 	// Initalize reader
-	initReader()
+	sh.Reader.initReader()
 	for {
-		line := readLine()
+		line := sh.Reader.readLine()
 		//log.Print(line) // Uses log to avoid buffering issues
 
 		// Skip processing line if empty
@@ -13,34 +26,27 @@ func Run() {
 			continue
 		}
 
-		var isBuiltin bool = getCommandType(line)
-		if !isBuiltin {
-			execute(line)
+		// cmd is the central object that moves in the system, not the raw line
+		// cmd must be parsed then passed to propper handler
+		cmd := sh.Parser.parse(line) // TODO: Needs to be implemented in parser
+		if cmd.IsBuiltin {
+			sh.Builtins.handleBuiltins(cmd)
 		} else {
-			handleBuiltins(line)
+			sh.Executor.execute(cmd)
 		}
 
 	}
 }
 
-// Checks if the command is an internal or
-// external command.
-func getCommandType(line []string) bool {
-
-	// Skip processing line if empty
-	if len(line) == 0 {
-		return false
-	}
-
-	// Get the list of built-in commands
-	var builtins []string = getBuiltins()
-	// For every builtin command check if the first arg of line matches
-	for _, builtin := range builtins {
-		if line[0] == builtin {
-			//log.Println("DEBUG: Command is built-in ✅\n")
-			return true
-		}
-	}
-	//log.Println("DEBUG: Command is not built-in ❌\n")
-	return false
+// Constructs the new shell struct
+//
+// TODO: implement and fill out actual internal functions
+func NewShell() *Shell {
+	sh := &Shell{}
+	sh.Reader = newInputReader()
+	sh.Parser = newParser()
+	sh.Executor = newExecutor()
+	sh.Builtins = newBuiltins()
+	sh.Config = newShellConfig()
+	return sh
 }

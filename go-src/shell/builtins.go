@@ -20,7 +20,7 @@ func getDirEnvars() (string, string) {
 	// Get working directory environment variable
 	var pwd string = os.Getenv("PWD")
 	// Get the user's home directory environment variable
-	var home = os.Getenv("HOME")
+	var home string = os.Getenv("HOME")
 
 	//log.Println("DEBUG: Current working directory: " + pwd)
 	//log.Println("DEBUG: User home directory: " + home + "\n")
@@ -98,7 +98,7 @@ func changeDir(dir string) (int, error) {
 }
 
 // Returns the builtin command values
-func getBuiltins() []string {
+func GetBuiltins() []string {
 	return builtins
 }
 
