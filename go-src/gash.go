@@ -9,8 +9,9 @@ import (
 func main() {
 
 	const version string = "1.0.0"
+	// Fetch and assign new global shell value
+	var gsh *shell.Shell = shell.GetShell()
 	// Call ParseArgs to parse any args passed to Gash
 	parser.ParseStartArgs(len(os.Args), version)
-	sh := shell.NewShell()
-	sh.Run()
+	gsh.Run()
 }

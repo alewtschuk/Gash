@@ -9,6 +9,10 @@ type Handler struct {
 	Builtins BuiltinHandler
 }
 
-// func handle() {
-// 	globalShell.handler.
-// }
+func (h *Handler) handle(cmd Command) {
+	if cmd.IsBuiltin {
+		globalShell.handler.Builtins.handleBuiltins(cmd)
+	} else {
+		globalShell.handler.Executor.execute(cmd)
+	}
+}

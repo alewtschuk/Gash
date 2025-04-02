@@ -6,19 +6,12 @@ package shell
 //
 // Also possibly holds the config
 type Shell struct {
-	// Data for io
-	io struct {
-		Reader InputReader
-		Parser Parser
-	}
-	// Data for handlers
-	handler struct {
-		Executor Executor
-		Builtins BuiltinHandler
-	}
-	Config *ShellConfig // Will not be a pointer (probably)
+	io      IO
+	handler Handler
+	Config  *ShellConfig // Will not be a pointer (probably)
 }
 
+// Should be the only shell variable referenced
 var globalShell *Shell = nil
 
 // Runs the shell. Method on shell struct
@@ -37,12 +30,7 @@ func (sh *Shell) Run() {
 		// cmd is the central object that moves in the system, not the raw line
 		// cmd must be parsed then passed to propper handler
 		cmd := sh.io.Parser.parse(line) // TODO: Needs to be implemented in parser
-		if cmd.IsBuiltin {
-			sh.handler.Builtins.handleBuiltins(cmd)
-		} else {
-			sh.handler.Executor.execute(cmd)
-		}
-
+		globalShell.handler.handle(cmd)
 	}
 }
 
@@ -50,22 +38,25 @@ func (sh *Shell) Run() {
 //
 // TODO: implement and fill out actual internal functions
 func NewShell() *Shell {
+	// Makes assignment, assignes memory, and evaluates functions storing results in struct fields
 	sh := &Shell{
-		io: struct {
-			Reader InputReader
-			Parser Parser
+		io: IO{
+			Reader: newInputReader(),
+			Parser: newParser(),
 		},
-		handler: struct {
-			Executor Executor
-			Builtins BuiltinHandler
+		handler: Handler{
+			Executor: newExecutor(),
+			Builtins: newBuiltins(),
 		},
 		Config: newShellConfig(),
 	}
-	sh.Reader = newInputReader()
-	sh.Parser = newParser()
-	sh.Executor = newExecutor()
-	sh.Builtins = newBuiltins()
-	sh.Config = newShellConfig()
-	globalShell = sh // Sets global shell to newshell
 	return sh
+}
+
+// Check and assign global shell
+func GetShell() *Shell {
+	if globalShell == nil {
+		globalShell = NewShell()
+	}
+	return globalShell
 }
