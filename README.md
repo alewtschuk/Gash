@@ -20,11 +20,3 @@ make check
 ```bash
 make clean
 ```
-
-## Install Dependencies
-
-In order to use git send-mail you need to run the following command:
-
-```bash
-make install-deps
-```
