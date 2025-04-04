@@ -30,6 +30,8 @@ func (sh *Shell) Run() {
 		// cmd is the central object that moves in the system, not the raw line
 		// cmd must be parsed then passed to propper handler
 		cmd := sh.io.Parser.parse(line) // TODO: Needs to be implemented in parser
+
+		// Evaluates the command
 		globalShell.handler.handle(cmd)
 	}
 }
