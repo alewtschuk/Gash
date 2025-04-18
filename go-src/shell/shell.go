@@ -1,5 +1,13 @@
 package shell
 
+import (
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/chzyer/readline"
+)
+
 // Declare shell struct
 // Holds the InputReader wrapper for the reader,
 // Executor and BuiltinsHandler.
@@ -19,8 +27,14 @@ func (sh *Shell) Run() {
 	// Initalize reader
 	sh.io.Reader.initReader()
 	for {
-		line := sh.io.Reader.readLine()
+		line, err := sh.io.Reader.readLine()
 		//log.Print(line) // Uses log to avoid buffering issues
+		if err != nil {
+			if err == io.EOF || err == readline.ErrInterrupt {
+				continue
+			}
+			fmt.Fprintln(os.Stderr, "Line unable to be read. Read error:", err)
+		}
 
 		// Skip processing line if empty
 		if len(line) == 0 {

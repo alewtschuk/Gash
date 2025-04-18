@@ -10,20 +10,21 @@ import (
 	"github.com/chzyer/readline"
 )
 
-// Declare reader instance, initalized once
-var reader *readline.Instance
+type InputReader struct {
+	// Declare reader instance, initalized once
+	reader *readline.Instance
+}
 
 // Initalizes the reader
-func initReader() {
+func (ir *InputReader) initReader() error {
 	var err error
-
 	//Log settings
 	// Ensures logs print immediately
 	log.SetOutput(os.Stderr)
 	// Removes timestamp
 	log.SetFlags(0)
 
-	reader, err = readline.NewEx(&readline.Config{
+	ir.reader, err = readline.NewEx(&readline.Config{
 		Prompt:          GetPrompt("PROMPT"),
 		HistoryFile:     "/tmp/gashcmds.tmp",
 		AutoComplete:    setCompleter(),
@@ -34,7 +35,10 @@ func initReader() {
 	})
 	if err != nil {
 		log.Fatal("Failed to initialize reader")
+		return err
 	}
+
+	return err
 }
 
 // Function constructor - constructs new function for listing given directory
@@ -87,25 +91,33 @@ func setCompleter() *readline.PrefixCompleter {
 }
 
 // Sets up reader and returns the line read and error if present
-func readLine() []string {
+func (ir *InputReader) readLine() (string, error) {
 
-	line, err := reader.Readline()
+	line, err := ir.reader.Readline()
 
 	// Capture and ignore exit signals
-	reader.CaptureExitSignal()
+	ir.reader.CaptureExitSignal()
 	if err == readline.ErrInterrupt {
-		return nil
+		return line, err
 	} else if err == io.EOF {
-		return nil
+		return line, err
 	} else if err != nil {
-		return nil
+		return line, err
 	}
+
+	return line, err
+}
+
+// Parses the line read and returns the parsed line
+func parseLine(line string) ([]string, error) {
+	var err error
 
 	// Get the parsed command slice from the parser
-	var parsedline []string = parser.ParseCommand(line)
-	if parsedline == nil {
+	var parsedLine []string = parser.ParseCommand(line)
+	if parsedLine == nil {
 		log.Println("Unable to parse line")
+		return nil, err
 	}
 
-	return parsedline
+	return parsedLine, err
 }

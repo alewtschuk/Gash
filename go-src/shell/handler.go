@@ -11,10 +11,10 @@ type Handler struct {
 // handles accordingly
 func (h *Handler) handle(cmd Command) {
 	if cmd.IsBuiltin {
-		globalShell.handler.Builtins.handleBuiltins(cmd)
+		h.Builtins.handleBuiltins(cmd)
 	} else if cmd.IsBackground {
 		fmt.Printf("%+v", cmd)
 	} else {
-		globalShell.handler.Executor.execute(cmd)
+		h.Executor.execute(cmd)
 	}
 }
