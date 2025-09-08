@@ -63,3 +63,4 @@ gash
 .gitignore
 /.vscode
 /.github
+*.excalidraw
